@@ -35,6 +35,7 @@ public sealed record LanguageChoice(string Code, string Name)
         new("ar", "Arabic"),
         new("fr", "French"),
         new("de", "German"),
+        new("cs", "Czech"),
         new("pt", "Portuguese"),
         new("ru", "Russian"),
         new("it", "Italian"),
@@ -538,13 +539,15 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     }
 
     /// <summary>LanguageChoice.All plus, when settings.json carries a code outside the curated
-    /// list (hand-edited, or an older build's value), an injected "{code} (not installed)" entry
-    /// at index 1 - selected by Code, so no setter mapping is needed and nothing is rewritten.</summary>
+    /// list (hand-edited, or an older build's value), an injected "{code} (custom Whisper code)"
+    /// entry at index 1 - selected by Code, so no setter mapping is needed and nothing is
+    /// rewritten. Whisper languages are not separately installed, so calling such a code "not
+    /// installed" would incorrectly imply that another download is required.</summary>
     private static IReadOnlyList<LanguageChoice> BuildLanguageChoices(string saved)
     {
         if (LanguageChoice.All.Any(c => c.Code == saved)) return LanguageChoice.All;
         var choices = LanguageChoice.All.ToList();
-        choices.Insert(1, new LanguageChoice(saved, saved + " (not installed)"));
+        choices.Insert(1, new LanguageChoice(saved, saved + " (custom Whisper code)"));
         return choices;
     }
 

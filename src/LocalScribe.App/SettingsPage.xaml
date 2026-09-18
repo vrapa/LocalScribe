@@ -63,16 +63,21 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Audio format" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding AudioFormatChoices}"
-                                  SelectedItem="{Binding AudioFormat}" MinWidth="140" />
+                                  IsSynchronizedWithCurrentItem="False"
+                                  SelectedItem="{Binding AudioFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="140" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Remote capture" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding RemoteModeChoices}"
-                                  SelectedItem="{Binding RemoteMode}" MinWidth="140" />
+                                  IsSynchronizedWithCurrentItem="False"
+                                  SelectedItem="{Binding RemoteMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="140" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource FieldRow}" IsEnabled="{Binding IsPerProcess}">
                         <TextBlock Text="Per-app target" Style="{StaticResource FieldLabel}" />
                         <ComboBox IsEditable="True" IsTextSearchEnabled="False"
+                                  IsSynchronizedWithCurrentItem="False"
                                   ItemsSource="{Binding RemoteAppSuggestions}"
                                   Text="{Binding RemoteApp, UpdateSourceTrigger=LostFocus}" MinWidth="200"
                                   local:ComboBoxWatermark.Text="e.g. Webex, Zoom" />
@@ -81,6 +86,7 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Microphone" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding MicChoices}" DisplayMemberPath="Label"
+                                  IsSynchronizedWithCurrentItem="False"
                                   SelectedItem="{Binding SelectedMic, Mode=TwoWay}" MinWidth="240" />
                     </StackPanel>
                     <TextBlock Text="Recording follows the Windows Communications default unless you pin a device. A pinned device that is unplugged at record time falls back to the default and is noted in the transcript."
@@ -88,6 +94,7 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Audio retention" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding AudioRetentionChoices}"
+                                  IsSynchronizedWithCurrentItem="False"
                                   DisplayMemberPath="Label" SelectedValuePath="Value"
                                   SelectedValue="{Binding AudioRetention}" MinWidth="260" />
                     </StackPanel>
@@ -106,13 +113,16 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Model" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding ModelChoices}"
+                                  IsSynchronizedWithCurrentItem="False"
                                   ItemTemplate="{StaticResource WhisperModelItemTemplate}"
                                   SelectedValuePath="Name" SelectedValue="{Binding Model}"
                                   MinWidth="260" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Backend" Style="{StaticResource FieldLabel}" />
-                        <ComboBox ItemsSource="{Binding BackendChoices}" SelectedItem="{Binding Backend}"
+                        <ComboBox ItemsSource="{Binding BackendChoices}"
+                                  IsSynchronizedWithCurrentItem="False"
+                                  SelectedItem="{Binding Backend, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   MinWidth="140" />
                     </StackPanel>
                     <!-- The backend constrains the whisper.cpp native load order, which is fixed for
@@ -126,8 +136,10 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Language" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding LanguageChoices}"
+                                  IsSynchronizedWithCurrentItem="False"
                                   DisplayMemberPath="Name" SelectedValuePath="Code"
-                                  SelectedValue="{Binding Language}" MinWidth="140" />
+                                  SelectedValue="{Binding Language, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="140" />
                     </StackPanel>
                 </StackPanel>
             </ui:Card>
@@ -176,7 +188,9 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Model" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding AssistantModelChoices}"
-                                  SelectedItem="{Binding AssistantModel}" MinWidth="240"
+                                  IsSynchronizedWithCurrentItem="False"
+                                  SelectedItem="{Binding AssistantModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="240"
                                   IsEnabled="{Binding HasAssistantModels}" />
                     </StackPanel>
                     <TextBlock Text="{Binding AssistantModelsNote, Mode=OneWay}"
@@ -507,7 +521,9 @@
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Timestamps" Style="{StaticResource FieldLabel}" />
                         <ComboBox ItemsSource="{Binding TimestampChoices}"
-                                  SelectedItem="{Binding Timestamps}" MinWidth="140" />
+                                  IsSynchronizedWithCurrentItem="False"
+                                  SelectedItem="{Binding Timestamps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="140" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Version" Style="{StaticResource FieldLabel}" />

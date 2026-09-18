@@ -102,6 +102,8 @@ public sealed class RemoteCapturePlannerTests
     {
         Assert.Contains(("Webex", "CiscoCollabHost"), RemoteCapturePlanner.KnownTargets);
         Assert.Contains(("Zoom", "Zoom"), RemoteCapturePlanner.KnownTargets);
+        Assert.Contains(("Slack", "Slack"), RemoteCapturePlanner.KnownTargets);
+        Assert.Contains(("Discord", "Discord"), RemoteCapturePlanner.KnownTargets);
     }
 
     [Fact]

@@ -395,6 +395,17 @@ public sealed class SettingsPageViewModelTests : IDisposable
     }
 
     [Fact]
+    public void Czech_is_a_first_class_multilingual_whisper_language()
+    {
+        var vm = MakeVm(new Settings { Language = "cs" });
+
+        Assert.Equal("cs", vm.Language);
+        Assert.Contains(vm.LanguageChoices, c => c.Code == "cs" && c.Name == "Czech");
+        Assert.DoesNotContain(vm.LanguageChoices, c => c.Code == "cs" && c.Name.Contains("custom"));
+        Assert.Equal(0, _settings.SaveCount); // merely opening Settings never rewrites the choice
+    }
+
+    [Fact]
     public async Task Identity_commits_and_blank_role_normalizes_to_null()
     {
         var vm = MakeVm();
@@ -515,7 +526,8 @@ public sealed class SettingsPageViewModelTests : IDisposable
         var blank = MakeVm(new Settings { Remote = new RemoteSetting { App = null } });
         Assert.Equal("", blank.RemoteApp);
         // One shared suggestion list (Core), plus the note that names Webex's audio process.
-        Assert.Equal(new[] { "CiscoCollabHost", "Webex", "Zoom" }, seeded.RemoteAppSuggestions);
+        Assert.Equal(new[] { "Slack", "Discord", "CiscoCollabHost", "Webex", "Zoom" },
+            seeded.RemoteAppSuggestions);
         Assert.Contains("CiscoCollabHost", seeded.RemoteAppNote);
     }
 
@@ -696,7 +708,8 @@ public sealed class SettingsPageViewModelTests : IDisposable
         // older build) - SelectedValuePath="Code" matched nothing -> blank ComboBox.
         var vm = MakeVm(new Settings { Language = "sv" });
         Assert.Equal("sv", vm.Language);
-        Assert.Contains(vm.LanguageChoices, c => c.Code == "sv" && c.Name == "sv (not installed)");
+        Assert.Contains(vm.LanguageChoices,
+            c => c.Code == "sv" && c.Name == "sv (custom Whisper code)");
         Assert.Equal(0, _settings.SaveCount);
     }
 

@@ -17,18 +17,21 @@ public static class RemoteCapturePlanner
     /// section 6). Deliberately ONLY the clean per-process apps: everything in FullMix is captured
     /// as system mix regardless, so suggesting it would be dishonest. Free text stays allowed -
     /// any render-session image name is a legal target.</summary>
-    public static IReadOnlyList<string> SuggestedPerProcessApps { get; } = ["CiscoCollabHost", "Webex", "Zoom"];
+    public static IReadOnlyList<string> SuggestedPerProcessApps { get; } =
+        ["Slack", "Discord", "CiscoCollabHost", "Webex", "Zoom"];
 
     /// <summary>The friendly-name -> capture-image table for the console's Remote-target picker
     /// (design 2026-07-12 section 1): the ONLY per-process fallbacks always offered even when not
     /// live. "Webex" targets CiscoCollabHost.exe (Stage-1 finding); "Zoom" targets Zoom. Single-
     /// sourced so labels/fallbacks are testable and never drift from the planner's own matching.</summary>
     public static IReadOnlyList<(string Friendly, string Image)> KnownTargets { get; } =
-        [("Webex", "CiscoCollabHost"), ("Zoom", "Zoom")];
+        [("Slack", "Slack"), ("Discord", "Discord"),
+         ("Webex", "CiscoCollabHost"), ("Zoom", "Zoom")];
 
     // Priority order for Auto (Stage-1 finding: Webex renders call audio in CiscoCollabHost.exe).
     private static readonly string[] Priority =
-        ["CiscoCollabHost", "Webex", "Zoom", "ms-teams", "msedgewebview2", "Teams"];
+        ["Slack", "Discord", "CiscoCollabHost", "Webex", "Zoom",
+         "ms-teams", "msedgewebview2", "Teams"];
 
     // Known all-zeros (Teams registers two render sessions on one PID) or shared-audio-process
     // (browsers/webviews) images: per-process loopback is silent or bleeds - use system mix.

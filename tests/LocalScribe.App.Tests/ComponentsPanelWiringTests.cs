@@ -34,4 +34,19 @@ public sealed class ComponentsPanelWiringTests
         Assert.Contains("{Binding DownloadLabel}", xaml);
         Assert.DoesNotContain("<Button Content=\"Download\"", xaml);
     }
+
+    [Fact]
+    public void Settings_pickers_do_not_replace_persisted_choices_with_the_collection_current_item()
+    {
+        string xaml = SettingsPageXaml();
+
+        Assert.Contains("SelectedItem=\"{Binding RemoteMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"",
+            xaml);
+        Assert.Contains("SelectedItem=\"{Binding Backend, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"",
+            xaml);
+        Assert.Contains("SelectedValue=\"{Binding Language, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}\"",
+            xaml);
+        Assert.True(xaml.Split("IsSynchronizedWithCurrentItem=\"False\"").Length - 1 >= 10,
+            "Every Settings ComboBox must opt out of ICollectionView current-item synchronization.");
+    }
 }
