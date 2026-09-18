@@ -20,7 +20,7 @@ public static class BackendSelector
     // English is the primary use case (Webex/Zoom lawyer-jail calls). A non-English `auto` session
     // with only multilingual models present would refuse rather than downgrade; that's a Stage-7
     // concern (multilingual downgrade ladder), not a bug in this ladder.
-    private static readonly string[] Ladder = ["tiny.en", "base.en", "small.en"];
+    private static readonly string[] Ladder = ["tiny", "base", "small"];
 
     public static (BackendPlan Plan, string? DowngradedFrom) Select(
         HardwareInfo hw, Settings settings, IReadOnlySet<string> availableModels)
@@ -44,13 +44,15 @@ public static class BackendSelector
         }
         else
         {
-            string ceiling = backend switch
+            string ceilingStem = backend switch
             {
-                Backend.Cuda => "small.en",
-                Backend.Vulkan => "base.en",
-                _ => hw.FastCores >= 8 ? "small.en" : "base.en",
+                Backend.Cuda => "small",
+                Backend.Vulkan => "base",
+                _ => hw.FastCores >= 8 ? "small" : "base",
             };
-            model = BestPresentAtOrBelow(ceiling, availableModels);
+            bool needsMultilingual = settings.Language is not ("en" or "auto");
+            model = BestPresentAtOrBelow(ceilingStem, availableModels, needsMultilingual);
+            string ceiling = needsMultilingual ? ceilingStem : ceilingStem + ".en";
             if (model != ceiling) downgradedFrom = ceiling;   // record the downgrade for a Start notice
         }
 
@@ -69,13 +71,25 @@ public static class BackendSelector
     public static int AutoCpuThreads(int fastCores)
         => Math.Clamp(Math.Max(Math.Min(4, 2 * fastCores), fastCores - 2), 2, 8);
 
-    private static string BestPresentAtOrBelow(string ceiling, IReadOnlySet<string> available)
+    private static string BestPresentAtOrBelow(string ceilingStem, IReadOnlySet<string> available,
+        bool needsMultilingual)
     {
-        int ceilingRank = Array.IndexOf(Ladder, ceiling);
+        int ceilingRank = Array.IndexOf(Ladder, ceilingStem);
         for (int r = ceilingRank; r >= 0; r--)
-            if (available.Contains(Ladder[r])) return Ladder[r];
+        {
+            string stem = Ladder[r];
+            if (needsMultilingual)
+            {
+                if (available.Contains(stem)) return stem;
+            }
+            else
+            {
+                if (available.Contains(stem + ".en")) return stem + ".en";
+                if (available.Contains(stem)) return stem; // English also works with multilingual weights.
+            }
+        }
         // Nothing present at/below the ceiling: return the ceiling name unchanged so Start's
         // fail-fast (Task 3) refuses with a clear "not downloaded" message.
-        return ceiling;
+        return needsMultilingual ? ceilingStem : ceilingStem + ".en";
     }
 }

@@ -63,6 +63,36 @@ public class BackendSelectorTests
         Assert.Equal("small", plan.ModelName);         // no .en suffix (spec 3)
     }
 
+    [Fact]
+    public void Non_english_auto_downgrades_through_models_that_are_actually_present()
+    {
+        // Regression: the old selector searched only the .en ladder and stripped the suffix
+        // afterward. With Czech + multilingual tiny on disk it returned absent "base" instead
+        // of the available "tiny", so Start refused a perfectly usable installation.
+        var (plan, downgradedFrom) = BackendSelector.Select(
+            new HardwareInfo(false, 0, false, 3), S(language: "cs"), Present("tiny"));
+        Assert.Equal("tiny", plan.ModelName);
+        Assert.Equal("base", downgradedFrom);
+    }
+
+    [Fact]
+    public void Non_english_auto_prefers_the_best_present_multilingual_model_at_the_ceiling()
+    {
+        var (plan, downgradedFrom) = BackendSelector.Select(
+            new HardwareInfo(false, 0, false, 3), S(language: "cs"), Present("base", "tiny"));
+        Assert.Equal("base", plan.ModelName);
+        Assert.Null(downgradedFrom);
+    }
+
+    [Fact]
+    public void English_auto_can_fall_back_to_multilingual_weights()
+    {
+        var (plan, downgradedFrom) = BackendSelector.Select(
+            new HardwareInfo(false, 0, false, 3), S(language: "en"), Present("base"));
+        Assert.Equal("base", plan.ModelName);
+        Assert.Equal("base.en", downgradedFrom);
+    }
+
     [Theory]
     [InlineData("small.en", "base.en")]
     [InlineData("base.en", "tiny.en")]

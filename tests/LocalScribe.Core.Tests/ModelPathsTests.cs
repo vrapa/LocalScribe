@@ -19,15 +19,19 @@ public class ModelPathsTests
     }
 
     [Fact]
-    public void Default_root_ends_with_models_and_is_absolute()
+    public void Missing_default_model_resolves_to_the_shared_download_root()
     {
         string prev = Environment.GetEnvironmentVariable("LOCALSCRIBE_MODELS") ?? "";
         try
         {
             Environment.SetEnvironmentVariable("LOCALSCRIBE_MODELS", null);
-            string p = ModelPaths.Resolve("ggml-tiny.en.bin");
+            const string file = "ggml-tiny.en.bin";
+            string p = ModelPaths.Resolve(file);
             Assert.True(Path.IsPathFullyQualified(p));
-            Assert.Equal("models", Path.GetFileName(Path.GetDirectoryName(p)));
+            // Since downloads were moved out of the install/update tree, a missing model must
+            // point at the stable per-user download root. The previous assertion expected a
+            // beside-the-binary "models" leaf and contradicted ModelPaths.ResolveRoots.
+            Assert.Equal(Path.Combine(ModelPaths.SharedRoot, file), p);
         }
         finally
         {
