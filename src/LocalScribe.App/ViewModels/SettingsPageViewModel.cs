@@ -56,6 +56,16 @@ public sealed record LanguageChoice(string Code, string Name)
 /// never silently dropped - capture's own fall-back marker handles the real absence at Start).</summary>
 public sealed record MicChoice(string? Id, string Name, string Label);
 
+/// <summary>Whether newly recorded session audio is retained beside its transcript.</summary>
+public sealed record AudioRetentionChoice(string Value, string Label)
+{
+    public static IReadOnlyList<AudioRetentionChoice> All { get; } =
+    [
+        new("keep", "Keep audio with the transcript"),
+        new("never", "Do not retain audio (new sessions only)"),
+    ];
+}
+
 /// <summary>One row of the Settings Voiceprints list (voiceprint design 2026-07-25): a saved
 /// Person plus a plain-language read of what voice data is stored for them. An immutable
 /// snapshot of the Person it was built from - every mutating command re-reads people.json and
@@ -452,14 +462,15 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         return choices;
     }
 
-    public string AudioRetentionDisplay
+    public IReadOnlyList<AudioRetentionChoice> AudioRetentionChoices { get; } = AudioRetentionChoice.All;
+    public string AudioRetention
     {
-        get
+        get => _settings.Current.AudioRetention == "never" ? "never" : "keep";
+        set
         {
-            string v = _settings.Current.AudioRetention;
-            return v is "keep" or "forever"
-                ? "Keep everything (audio is never auto-deleted)"
-                : "Migrated policy: " + v + " (retention editing is not exposed)";
+            string normalized = value == "never" ? "never" : "keep";
+            Commit(s => s with { AudioRetention = normalized });
+            OnPropertyChanged();
         }
     }
 

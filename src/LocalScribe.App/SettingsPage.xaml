@@ -87,9 +87,12 @@
                                Style="{StaticResource Note}" TextWrapping="Wrap" />
                     <StackPanel Style="{StaticResource FieldRow}">
                         <TextBlock Text="Audio retention" Style="{StaticResource FieldLabel}" />
-                        <TextBlock Text="{Binding AudioRetentionDisplay, Mode=OneWay}"
-                                   VerticalAlignment="Center" />
+                        <ComboBox ItemsSource="{Binding AudioRetentionChoices}"
+                                  DisplayMemberPath="Label" SelectedValuePath="Value"
+                                  SelectedValue="{Binding AudioRetention}" MinWidth="260" />
                     </StackPanel>
+                    <TextBlock Text="Applies to new sessions. Changing this does not delete audio already stored."
+                               Style="{StaticResource Note}" TextWrapping="Wrap" />
                     <!-- Console compact mode (design 2026-07-18 section 6). DEFAULT OFF; read at
                          each Start, so it applies to the next recording with no restart. -->
                     <CheckBox Content="Collapse the record console to a compact pill when recording starts"

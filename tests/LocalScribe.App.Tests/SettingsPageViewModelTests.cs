@@ -313,13 +313,27 @@ public sealed class SettingsPageViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Retention_is_a_read_only_display()
+    public async Task Retention_choice_saves_keep_or_never_for_new_sessions()
     {
-        // Mic is now the picker (see the mic-picker facts below); retention stays read-only.
-        var follow = MakeVm();
-        Assert.Contains("Keep everything", follow.AudioRetentionDisplay);
-        var legacy = MakeVm(new Settings { AudioRetention = "days:30" });
-        Assert.Contains("days:30", legacy.AudioRetentionDisplay);
+        var vm = MakeVm();
+        Assert.Equal("keep", vm.AudioRetention);
+        Assert.Equal(new[] { "keep", "never" }, vm.AudioRetentionChoices.Select(c => c.Value));
+
+        vm.AudioRetention = "never";
+        await vm.LastSave;
+        Assert.Equal("never", _settings.Current.AudioRetention);
+
+        vm.AudioRetention = "keep";
+        await vm.LastSave;
+        Assert.Equal("keep", _settings.Current.AudioRetention);
+    }
+
+    [Fact]
+    public void Legacy_retention_value_displays_as_keep_until_the_user_changes_it()
+    {
+        var vm = MakeVm(new Settings { AudioRetention = "days:30" });
+        Assert.Equal("keep", vm.AudioRetention);
+        Assert.Equal("days:30", _settings.Current.AudioRetention); // getter does not silently rewrite disk
     }
 
     [Fact]
