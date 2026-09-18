@@ -17,17 +17,39 @@ string? remote = Arg(args, "--remote");
 if (local is null && remote is null)
 {
     Console.Error.WriteLine("usage: LocalScribe.OfflineRunner --local <wav> [--remote <wav>] " +
-        "[--out <storageRoot>] [--model <name>] [--backend auto|cuda|vulkan|cpu] [--vram <mb>] [--cores <n>]");
+        "[--settings <json>] [--out <storageRoot>] [--language <code|auto>] [--model <name>] " +
+        "[--backend auto|cuda|vulkan|cpu] [--vram <mb>] [--cores <n>]");
     return 2;
 }
 
-var settingsStore = new SettingsStore(Path.Combine(
-    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LocalScribe", "settings.json"));
-var settings = await settingsStore.LoadOrDefaultAsync(default);
+string? settingsOverride = Arg(args, "--settings");
+if (Array.IndexOf(args, "--settings") >= 0 && settingsOverride is null)
+{
+    Console.Error.WriteLine("--settings requires a value.");
+    return 2;
+}
+if (settingsOverride is not null && !File.Exists(settingsOverride))
+{
+    Console.Error.WriteLine($"--settings file not found: {settingsOverride}");
+    return 2;
+}
+var settingsPath = settingsOverride ?? Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LocalScribe", "settings.json");
+var settingsStore = new SettingsStore(settingsPath);
+var settings = await settingsStore.LoadOrDefaultAsync(persistMigration: settingsOverride is null, default);
 if (Arg(args, "--out") is { } outRoot) settings = settings with { StorageRoot = outRoot };
+if (Arg(args, "--language") is { } language)
+    settings = settings with { Language = string.IsNullOrWhiteSpace(language) ? "auto" : language.Trim() };
 if (Arg(args, "--model") is { } model) settings = settings with { Model = model };
 if (Arg(args, "--backend") is { } backend)
-    settings = settings with { Backend = Enum.Parse<Backend>(backend, ignoreCase: true) };
+{
+    if (!Enum.TryParse<Backend>(backend, ignoreCase: true, out var parsedBackend))
+    {
+        Console.Error.WriteLine("--backend must be auto, cuda, vulkan, or cpu.");
+        return 2;
+    }
+    settings = settings with { Backend = parsedBackend };
+}
 
 // Native backend order from the RESOLVED setting (spec 3 cascade for auto, constrained for an
 // explicit pick), set once and after --backend has been applied. Whisper.net probes this order and
