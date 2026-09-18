@@ -1,5 +1,9 @@
 # LocalScribe
 
+> **Community fork:** this repository carries a small set of Windows/Czech reliability fixes by
+> `vrapa` on top of the upstream 0.9.2 code. See [COMMUNITY-FORK.md](COMMUNITY-FORK.md) for the exact
+> changes, test evidence, limitations, and attribution. It is not an official upstream release.
+
 **Local-first meeting transcription for Windows 11. Open-source. No cloud, no subscription, no network.**
 
 LocalScribe runs quietly in the system tray, captures both sides of your online meetings — your
