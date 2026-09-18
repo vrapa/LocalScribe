@@ -1,5 +1,7 @@
 # LocalScribe
 
+[English](README.md) | [Čeština](README.cs.md)
+
 > **Community fork:** this repository carries a small set of Windows/Czech reliability fixes by
 > `vrapa` on top of the upstream 0.9.2 code. See [COMMUNITY-FORK.md](COMMUNITY-FORK.md) for the exact
 > changes, test evidence, limitations, and attribution. It is not an official upstream release.
@@ -37,8 +39,16 @@ and every session folder can be re-verified against a hash manifest.
 
 ## Install
 
-Download **`LocalScribe-win-Setup.exe`** (~1.36 GB) from
-[Releases](https://github.com/imnotwallace/LocalScribe/releases).
+For this community fork, download **`LocalScribe-vrapa-0.9.2-1-win-x64.zip`** and
+**`SHA256SUMS.txt`** from the
+[v0.9.2-vrapa.1 release](https://github.com/vrapa/LocalScribe/releases/tag/v0.9.2-vrapa.1).
+Verify the hash, extract the archive, and run `app\LocalScribe.App.exe`. The preview is portable and
+self-contained; it does not require installation or a separate .NET runtime. Its intentionally
+reduced feature set is documented in [PORTABLE-RELEASE.md](PORTABLE-RELEASE.md).
+
+The upstream repository documents a full **`LocalScribe-win-Setup.exe`** package (~1.36 GB), but no
+upstream GitHub release asset was available when this fork preview was validated on 18 September
+2026.
 
 ### This installer is not code-signed
 
